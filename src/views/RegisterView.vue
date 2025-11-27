@@ -61,9 +61,9 @@
                             {{ errors.password_confirmation }}
                         </p>
 
-                        <!-- Register button -->
-                        <button class="btn btn-lg btn-theme w-100 mb-3 mt-3" @click="register" v-if="!isLoading">
-                            Register
+                        <!-- Send OTP button -->
+                        <button class="btn btn-lg btn-theme w-100 mb-3 mt-3" @click="sendOtp" v-if="!isLoading">
+                            Send OTP
                         </button>
 
                         <button class="btn btn-lg btn-theme w-100 mb-3" disabled v-else>
@@ -95,9 +95,9 @@ import { TOAST_SUCCESS, TOAST_ERROR } from "@/utils/config";
 
 const router = useRouter();
 
-// 🚀 Auto redirect if already logged in
+// Redirect if already logged in
 if (sessionStorage.getItem("auth-token")) {
-    window.location.href = "http://localhost:5173/#/dashboard";
+    window.location.href = "/#/dashboard";
 }
 
 const name = ref("");
@@ -110,9 +110,10 @@ const errors = ref({});
 const toastRef = ref(null);
 const isLoading = ref(false);
 
+// Toggle eye
 const togglePassword = () => (showPassword.value = !showPassword.value);
 
-// validation
+// Validation
 const validateName = () => {
     errors.value.name = name.value ? "" : "Full name is required.";
 };
@@ -139,8 +140,8 @@ const validatePasswordConfirmation = () => {
     else errors.value.password_confirmation = "";
 };
 
-// ⭐ REGISTER API
-const register = async () => {
+// ⭐ Step-1: Send OTP (Account not created yet)
+const sendOtp = async () => {
     validateName();
     validateEmail();
     validatePassword();
@@ -158,42 +159,23 @@ const register = async () => {
     try {
         isLoading.value = true;
 
-        const response = await axios.post("/api/register", {
-            name: name.value,
+        // Store registration data temporarily
+        sessionStorage.setItem("pending-name", name.value);
+        sessionStorage.setItem("pending-email", email.value);
+        sessionStorage.setItem("pending-password", password.value);
+        sessionStorage.setItem("pending-password-confirm", password_confirmation.value);
+
+        await axios.post("/api/send-otp", {
             email: email.value,
-            password: password.value,
-            password_confirmation: password_confirmation.value,
         });
 
-        toastRef.value.show("Account created successfully!", TOAST_SUCCESS);
+        toastRef.value.show("OTP sent successfully!", TOAST_SUCCESS);
 
-        // ⭐ STORE TOKEN
-        sessionStorage.setItem("auth-token", response.data.token);
-
-        // ⭐ STORE USER DATA
-        sessionStorage.setItem("user-id", response.data.user.id);
-        sessionStorage.setItem("user-name", response.data.user.name);
-        sessionStorage.setItem("user-email", response.data.user.email);
-
-        // redirect
-        setTimeout(() => {
-            router.push("/dashboard");
-        }, 400);
+        router.push("/otp-verify");
 
     } catch (error) {
-        console.error("Registration error:", error);
-
-        if (error.response?.status === 422) {
-            const validationErrors = error.response.data.errors;
-            if (validationErrors) {
-                Object.keys(validationErrors).forEach((k) => {
-                    errors.value[k] = validationErrors[k][0];
-                });
-            }
-            toastRef.value.show("Please check your inputs.", TOAST_ERROR);
-        } else {
-            toastRef.value.show("Unable to register. Try again.", TOAST_ERROR);
-        }
+        console.error("OTP error:", error);
+        toastRef.value.show("Unable to send OTP. Try again.", TOAST_ERROR);
     } finally {
         isLoading.value = false;
     }
