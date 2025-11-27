@@ -12,6 +12,14 @@
                 </div>
             </div>
 
+            <!-- kgidno -->
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="kgidno" v-model.trim="profile.kgidno" />
+                    <label for="kgidno">KGID No</label>
+                </div>
+            </div>
+
             <!-- Email -->
             <div class="col-12">
                 <div class="form-floating mb-3">

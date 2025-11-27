@@ -56,21 +56,21 @@
                 <li class="nav-item" onclick="contentClick()">
                     <router-link to="/appointment" class="nav-link">
                         <i class="menu-icon bi bi-clock"></i>
-                        <span class="menu-name">Appointment</span>
+                        <span class="menu-name"> Appointment</span>
                     </router-link>
                 </li>
 
                 <li class="nav-item" onclick="contentClick()">
                     <router-link to="/feedback" class="nav-link">
                         <i class="menu-icon bi bi-chat-square-dots"></i>
-                        <span class="menu-name">Feedback</span>
+                        <span class="menu-name"> Feedback</span>
                     </router-link>
                 </li>
 
                 <li class="nav-item" onclick="contentClick()">
                     <a class="nav-link">
                         <i class="nav-icon bi bi-lightbulb"></i>
-                        <span class="menu-name">Help</span>
+                        <span class="menu-name"> Help</span>
                     </a>
                 </li>
             </ul>
