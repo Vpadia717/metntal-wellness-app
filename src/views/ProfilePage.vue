@@ -12,7 +12,7 @@
                 </div>
             </div>
 
-            <!-- kgidno -->
+            <!-- KGID NO -->
             <div class="col-12">
                 <div class="form-floating mb-3">
                     <input type="number" class="form-control" id="kgidno" v-model.trim="profile.kgidno" />
@@ -23,12 +23,12 @@
             <!-- Email -->
             <div class="col-12">
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="email" v-model.trim="profile.email" disabled />
+                    <input type="email" class="form-control" id="email" v-model="profile.email" disabled />
                     <label for="email">Email</label>
                 </div>
             </div>
 
-            <!-- Date of Birth -->
+            <!-- DOB -->
             <div class="col-12">
                 <div class="form-floating mb-3">
                     <input type="date" class="form-control" id="dob" v-model="profile.dob" />
@@ -130,11 +130,12 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 // --------------------------
-// FULL PROFILE STATE
+// STATE
 // --------------------------
 const profile = ref({
     name: "",
     email: "",
+    kgidno: "",
     dob: "",
     phone: "",
     gender: "",
@@ -157,13 +158,11 @@ const divisions = [
     "CAR Head Quarters", "CAR West"
 ];
 
-// (Full divisionPlaces kept exactly from your file)
-const divisionPlaces = { /* FULL DATA FROM YOUR MESSAGE */ };
-
+const divisionPlaces = { /* FULL LIST HERE */ };
 const currentPlaces = ref([]);
 
 // --------------------------
-// UPDATE PLACE LIST BASED ON DIVISION
+// UPDATE PLACES
 // --------------------------
 const updatePlaces = () => {
     currentPlaces.value = divisionPlaces[profile.value.division] || [];
@@ -171,18 +170,16 @@ const updatePlaces = () => {
 };
 
 // --------------------------
-// DATE FORMATTER (fix DOB autofill)
+// FORMAT DATE
 // --------------------------
 const formatDate = (dateString) => {
     if (!dateString) return "";
     const d = new Date(dateString);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-        d.getDate()
-    ).padStart(2, "0")}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
 // --------------------------
-// FETCH PROFILE DATA
+// FETCH PROFILE
 // --------------------------
 const fetchProfile = async () => {
     try {
@@ -191,6 +188,7 @@ const fetchProfile = async () => {
         profile.value.name = res.data.user.name;
         profile.value.email = res.data.user.email;
 
+        profile.value.kgidno = res.data.detail.kgidno || "";
         profile.value.dob = res.data.detail.dob ? formatDate(res.data.detail.dob) : "";
         profile.value.phone = res.data.detail.phone || "";
         profile.value.gender = res.data.detail.gender || "";
@@ -210,6 +208,7 @@ const fetchProfile = async () => {
 // --------------------------
 const submitProfile = async () => {
     const payload = {
+        kgidno: profile.value.kgidno,
         dob: profile.value.dob,
         phone: profile.value.phone,
         gender: profile.value.gender,
